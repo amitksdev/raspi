@@ -1,0 +1,92 @@
+<html>
+  <style>
+    .pause {
+      background-color: #FCAF50; /* Amber */
+      text-align: center;
+    }
+    .prev {
+      background-color: #4CAF50; /* Green */
+      text-align: center;
+    }
+    td img {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+ 
+  <script type="text/javascript">
+    function submit(resp) {
+      blinkButton(resp);
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+          if (xhr.responseText == 'Done') {
+            showDone(resp);
+          }
+          console.log(xhr.responseText);
+        }   
+      }
+      xhr.open('post', resp, true);
+      xhr.send(resp);
+    }
+    function blinkButton(btn_id) {
+      var btn = document.getElementById(btn_id)
+      btn.disabled = true;
+      btn.style.visibility='hidden';
+      setTimeout(()=>{
+        btn.disabled = false;
+        btn.style.visibility='visible';
+        console.log('Button Activated')}, 500)
+    }
+    function showDone(btn_id) {
+      var img = document.getElementById(btn_id+'_ok');
+      img.style.visibility = 'block';
+      fadeOut(img);
+    }
+    function fadeOut(element) {
+      var op = 1;  // initial opacity
+      element.style.visibility = "visible";
+      var timer = setInterval(function () {
+          if (op <= 0.1){
+              clearInterval(timer);
+          }
+          element.style.opacity = op;
+          op -= 0.1;
+      }, 50);
+    }
+    window.onload = function() {
+      const ok_imgs = document.getElementsByClassName('ok');
+      for (let i = 0; i < ok_imgs.length; i++) {
+        ok_imgs[i].style.visibility = "hidden";
+      }
+    };
+  </script>
+ 
+  <body>
+    <head>
+      <title>Photo Frame Controller</title>
+    </head>    
+    <table height="100%" width="100%">  
+      <tr>
+        <td class="prev" width="25%">
+          <img id="prev_ok" class="ok" src="/static/images/tick.png" alt="" width="64" height="64" />
+          <img id="prev" src="/static/images/prev.png" alt="" width="128" height="128" onclick="submit('prev')"/>
+        </td>
+        <td class="pause"  width="25%">
+          <img id="pause_ok" class="ok" src="/static/images/tick.png" alt="" width="64" height="64" />
+          <img id="pause" src="/static/images/pause.jpeg" alt="" width="160" height="160" onclick="submit('pause')"/>
+        </td>
+        <td class="pause"  width="25%">
+          <img id="resume_ok" class="ok" src="/static/images/tick.png" alt="" width="64" height="64" />
+          <img id="resume" src="/static/images/play.png" alt="" width="128" height="128" onclick="submit('resume')"/>
+        </td>
+        <td class="prev"  width="25%">
+          <img id="next_ok" class="ok" src="/static/images/tick.png" alt="" width="64" height="64" />
+          <img id="next" src="/static/images/next.png" alt="" width="128" height="128" onclick="submit('next')"/>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+

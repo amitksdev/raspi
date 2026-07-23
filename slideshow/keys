@@ -1,0 +1,6 @@
+# remove the current binding of Return key from action_0
+action_0
+zoom_in
+# set new binding
+toggle_pause Return
+toggle_info Up

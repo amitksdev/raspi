@@ -1,0 +1,15 @@
+[[protocols]]
+name = "my_dpf"
+protocol = "nec"
+#variant = "necx"
+[protocols.scancodes]
+0xbf12 = "KEY_RIGHT"
+0xbf11 = "KEY_LEFT"
+0xbf10 = "KEY_ENTER"
+0xbf13 = "KEY_UP"
+[[protocols]]
+protocol = "rc-6"
+[protocols.scancodes]
+0x5b = "KEY_RIGHT"
+0x5a = "KEY_LEFT"
+0x5c = "KEY_ENTER"

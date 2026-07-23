@@ -1,0 +1,6 @@
+[gdrive]
+type = drive
+scope = drive
+token = {"access_token":"ya29.a0Aa7MYirqURqWa54v7D9HfZ_QNgeLCPsQi6DsG5c-q_WaNsWDDeILV5w1Ez8tMJpQAmJ-BY9WWyTqsqXvRwACuN6_hNA5zArtBxKT7CicC42-TieOHtM2mmBsSCcJe6U9638_EcaZpnkEwbxRK5JiDpFLndQ7P-6nTQqpOWGrJoNirqLEvxZAOYeXY-eR9hB1TEkGt74aCgYKAeYSARASFQHGX2MiphhL25FnkWqos0tICFbblQ0206","token_type":"Bearer","refresh_token":"1//0gcMsRCHUV0_xCgYIARAAGBASNwF-L9Ir2NhmImp3JGBQShoSbD85zB9nlhjYUDrXVYtXP0eSeK39k3mnsMLkeB4eYXW4HcaeiQU","expiry":"2026-03-22T20:25:06.1391902+05:30","expires_in":3599}
+team_drive = 
+

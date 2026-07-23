@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Usage: ./showinfo.sh <file> [index] [total]
+
+STATE_FILE="/tmp/feh_state"
+
+FILE="$1"
+INDEX="$2"
+TOTAL="$3"
+
+SHOW_DATE=1
+SHOW_INDEX=1
+
+if [ -z "$FILE" ]; then
+    echo "Usage: $0 <file> [index] [total]"
+    exit 1
+fi
+
+# ---- DATE FIRST ----
+if [ "$SHOW_DATE" -eq 1 ]; then
+    d=$(exiftool -q -q -DateTimeOriginal -s3 "$FILE")
+
+    if [ -n "$d" ]; then
+    	YEAR=${d%%:*}
+    	REST=${d#*:}
+    	MONTH=${REST%%:*}
+    	printf "%04d/%02d  " "$YEAR" "$MONTH"
+    else
+        printf ""
+    fi
+fi
+
+# ---- THEN INDEX ----
+if [ "$SHOW_INDEX" -eq 1 ] && [ -n "$INDEX" ] && [ -n "$TOTAL" ]; then
+    printf "[%d/%d]" "$INDEX" "$TOTAL"
+fi
+
+#printf "Test1"
+
+if [ -f "$STATE_FILE" ]; then
+    STATE=$(cat "$STATE_FILE")
+else
+    STATE=""
+fi
+
+if [ "$STATE" = "PAUSED" ]; then
+    printf " - PAUSED"
+else
+   printf ""
+fi
