@@ -10,6 +10,7 @@ echo "Photo time interval: $SLIDE_INTERVAL" >> $LOGFILE
 echo "Photo dir: $PHOTO_DIR" >> $LOGFILE
 echo "Show Date Str: $SHOW_DATE" >> $LOGFILE
 echo "Reload Interval: $RELOAD_INTERVAL" >> $LOGFILE
+echo "Active Playlist: $ACTIVE_PLAYLIST" >> $LOGFILE
 
 xset -dpms
 xset s off
@@ -24,14 +25,14 @@ while true; do
     echo "Starting Slideshow..." >> $LOGFILE
 
     feh --recursive -z -Z -D $SLIDE_INTERVAL \
-        --reload $RELOAD_INTERVAL \
+        --reload 4200 \
+        --filelist $ACTIVE_PLAYLIST \
         --hide-pointer \
         --auto-rotate \
         --fullscreen \
         --zoom fill \
         --font "Roboto-Medium/20" \
         --draw-tinted \
-        "$PHOTO_DIR" \
         --info "/home/pi/slideshow/get_exif.sh %F %u %l" &
 
     FEH_PID=$!
@@ -43,5 +44,5 @@ while true; do
     EXIT_CODE=$?
     echo "Slideshow exited with code $EXIT_CODE" >> $LOGFILE
 
-    sleep 30
+    sleep 5
 done

@@ -13,6 +13,18 @@
       margin-left: auto;
       margin-right: auto;
     }
+    .playlist-btn {
+      width: 100%;
+      height: 70px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .playlist-img {
+      width: 220px;
+      height: 70px;
+      cursor: pointer;
+    }
   </style>
  
   <script type="text/javascript">
@@ -67,26 +79,46 @@
     <head>
       <title>Photo Frame Controller</title>
     </head>    
-    <table height="100%" width="100%">  
+    <table width="100%">  
       <tr>
-        <td class="prev" width="25%">
+        <td width="25%">
           <img id="prev_ok" class="ok" src="/static/images/tick.png" alt="" width="64" height="64" />
           <img id="prev" src="/static/images/prev.png" alt="" width="128" height="128" onclick="submit('prev')"/>
         </td>
-        <td class="pause"  width="25%">
+        <td width="25%">
           <img id="pause_ok" class="ok" src="/static/images/tick.png" alt="" width="64" height="64" />
           <img id="pause" src="/static/images/pause.jpeg" alt="" width="160" height="160" onclick="submit('pause')"/>
         </td>
-        <td class="pause"  width="25%">
+        <td width="25%">
           <img id="resume_ok" class="ok" src="/static/images/tick.png" alt="" width="64" height="64" />
           <img id="resume" src="/static/images/play.png" alt="" width="128" height="128" onclick="submit('resume')"/>
         </td>
-        <td class="prev"  width="25%">
+        <td width="25%">
           <img id="next_ok" class="ok" src="/static/images/tick.png" alt="" width="64" height="64" />
           <img id="next" src="/static/images/next.png" alt="" width="128" height="128" onclick="submit('next')"/>
         </td>
       </tr>
     </table>
+<br>
+
+<table width="100%">
+  <tr>
+    <td width="33%">
+      <img id="last10_ok" class="ok" src="/static/images/tick.png" alt="" width="48" height="48" />
+      <img id="last10" class="playlist-img" src="/static/images/last10.svg" alt="Last 10" onclick="submit('last10')"/>
+    </td>
+
+    <td width="33%">
+      <img id="last100_ok" class="ok" src="/static/images/tick.png" alt="" width="48" height="48" />
+      <img id="last100" class="playlist-img" src="/static/images/last100.svg" alt="Last 100" onclick="submit('last100')"/>
+    </td>
+
+    <td width="34%">
+      <img id="reset_ok" class="ok" src="/static/images/tick.png" alt="" width="48" height="48" />
+      <img id="reset" class="playlist-img" src="/static/images/reset.svg" alt="Reset" onclick="submit('reset')"/>
+    </td>
+  </tr>
+</table>
   </body>
 </html>
 
