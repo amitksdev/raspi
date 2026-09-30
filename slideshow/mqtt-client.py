@@ -2,7 +2,7 @@ import logging
 
 import paho.mqtt.client as mqtt
 
-from slide-utils import apply_command
+from slide_utils import apply_command
 
 # --------------------------------------------------
 # Configuration
