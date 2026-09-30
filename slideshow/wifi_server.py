@@ -1,84 +1,19 @@
 import http.server
-import socketserver
 import os
-import time
-import signal
-import subprocess
 import random
-from pathlib import Path
-from datetime import datetime
 import shutil
+import signal
+import socketserver
+import time
 
-
-LOG_FILE = '/home/pi/slideshow/web_access.log'
-#LOG_FILE = '/tmp/web_access.log'
-FEH_PID_FILE = '/tmp/feh.pid'
-FEH_STATE_FILE = '/tmp/feh_state'
-MASTER_LIST = "/home/pi/Pictures/Slides/feh/playlists/all_photos.txt"
-ACTIVE_PLAYLIST = "/home/pi/Pictures/Slides/feh/playlists/active.txt"
-
-# Ensure files exist
-Path(LOG_FILE).touch(exist_ok=True)
-Path(FEH_STATE_FILE).touch(exist_ok=True)
-
-
-def log(msg):
-    with open(LOG_FILE, "a") as f:
-        f.write(f"{datetime.utcnow()} :: {msg}\n")
-
-
-def get_feh_pid():
-    try:
-        with open(FEH_PID_FILE) as f:
-            return int(f.read().strip())
-    except Exception:
-        return None
-
-
-def send_key_to_feh(key):
-    """Send key press to feh window"""
-    pid = get_feh_pid()
-    if not pid:
-        log("FEH PID not found.")
-        return False
-
-    env = os.environ.copy()
-    env["DISPLAY"] = ":0"
-    env["XAUTHORITY"] = "/home/pi/.Xauthority"
-
-    try:
-        # Get window ID
-        result = subprocess.run(
-            ["xdotool", "search", "--pid", str(pid)],
-            capture_output=True,
-            text=True,
-            env=env
-        )
-
-        wid_list = result.stdout.strip().split("\n")
-        if not wid_list or wid_list[0] == "":
-            log("FEH window not found.")
-            return False
-
-        wid = wid_list[0]
-
-        # Activate window
-        subprocess.run(
-            ["xdotool", "windowactivate", wid],
-            env=env
-        )
-
-        # Send key
-        subprocess.run(
-            ["xdotool", "key", key],
-            env=env
-        )
-
-        return True
-
-    except Exception as e:
-        log(f"Key send failed: {e}")
-        return False
+from slide_utils import (
+    ACTIVE_PLAYLIST,
+    FEH_STATE_FILE,
+    MASTER_LIST,
+    apply_command,
+    log,
+    send_key_to_feh,
+)
 
 
 def build_playlist(count):
@@ -87,19 +22,15 @@ def build_playlist(count):
     from MASTER_LIST.
     count=None -> all photos
     """
-    log(f"Request to build playlist: {count}") 
+    log(f"Request to build playlist: {count}")
     total = 0
     temp_file = ACTIVE_PLAYLIST + ".tmp"
 
-    with open(MASTER_LIST, "r") as src, \
-         open(temp_file, "w") as dst:
-
+    with open(MASTER_LIST, "r", encoding="utf-8") as src, open(temp_file, "w", encoding="utf-8") as dst:
         if count is None:
             shutil.copyfileobj(src, dst)
-
             src.seek(0)
             total = sum(1 for _ in src)
-
         else:
             for line in src:
                 dst.write(line)
@@ -107,30 +38,32 @@ def build_playlist(count):
                 if total >= count:
                     break
 
-    # Restart feh
-    pid = get_feh_pid()
-    os.kill(pid, signal.SIGINT) 
-    time.sleep(2)
+    pid = None
+    try:
+        with open("/tmp/feh.pid", encoding="utf-8") as f:
+            pid = int(f.read().strip())
+    except Exception:
+        pass
 
-    # Atomic replace
+    if pid:
+        os.kill(pid, signal.SIGINT)
+        time.sleep(2)
+
     os.replace(temp_file, ACTIVE_PLAYLIST)
-
     log(f"Playlist updated ({total} images)")
-
-    # Reload feh
-    # send_key_to_feh("r")
-
     return total
 
+
 def refresh_overlay():
-    """Toggle info twice to force redraw"""
+    """Toggle info twice to force redraw."""
     send_key_to_feh("r")
     send_key_to_feh("i")
     time.sleep(2)
     send_key_to_feh("i")
 
+
 def build_random_playlist(count=None):
-    with open(MASTER_LIST, "r") as f:
+    with open(MASTER_LIST, "r", encoding="utf-8") as f:
         photos = [line.strip() for line in f if line.strip()]
 
     random.shuffle(photos)
@@ -139,13 +72,12 @@ def build_random_playlist(count=None):
         photos = photos[:count]
 
     tmp = ACTIVE_PLAYLIST + ".tmp"
-    with open(tmp, "w") as f:
+    with open(tmp, "w", encoding="utf-8") as f:
         f.write("\n".join(photos))
         f.write("\n")
 
     os.replace(tmp, ACTIVE_PLAYLIST)
-
-    send_key_to_feh("r")      # Reload feh
+    send_key_to_feh("r")
 
 class MyHandler(http.server.SimpleHTTPRequestHandler):
 
@@ -156,28 +88,16 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
         log(f"Received command: {data}")
 
         if data == "next":
-            send_key_to_feh("n")
+            apply_command(data)
 
         elif data == "prev":
-            send_key_to_feh("p")
+            apply_command(data)
 
         elif data == "pause":
-            with open(FEH_STATE_FILE, "w") as f:
-                f.write("PAUSED")
-
-            send_key_to_feh("h")
-            time.sleep(1)
-            send_key_to_feh("r")     # pause slideshow
-            #refresh_overlay()        # show PAUSED
+            apply_command(data)
 
         elif data == "resume":
-            with open(FEH_STATE_FILE, "w") as f:
-                f.write("RUNNING")
-
-            send_key_to_feh("h")
-            time.sleep(1)
-            send_key_to_feh("r")     # unpause slideshow
-            #refresh_overlay()        # remove PAUSED
+            apply_command(data)
 
         elif data.startswith("top:"):
             try:

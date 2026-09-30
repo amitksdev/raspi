@@ -19,6 +19,7 @@ xset s noblank
 echo "Starting Python Server..." >> $LOGFILE
 cd /home/pi/slideshow
 python3 wifi_server.py &
+python3 mqtt-client.py &
 echo "Done!" >> $LOGFILE
 
 while true; do
